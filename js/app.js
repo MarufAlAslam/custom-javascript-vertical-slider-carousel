@@ -1,93 +1,72 @@
-// JavaScript STARTS FROM HERE
+{/* <script> */ }
+document.addEventListener('DOMContentLoaded', function () {
+    const carouselItems = document.querySelectorAll('.carousel-item');
+    const carousel = document.querySelector('.carousel');
+    let currentIndex = 0;
+    let isScrolling = false;
 
-const carouselItems = document.querySelectorAll('.carousel-item');
-const carousel = document.querySelector('.carousel');
-carouselItems.forEach((item, index) => {
-    item.addEventListener('click', () => {
-        if (index === 0) {
-            carousel.style.transform = `translateY(-${(carouselItems.length - 2) * 104}%)`;
-        }
-        else if (index === carouselItems.length - 1) {
-            carousel.style.transform = `translateY(-104%)`;
-        }
-        else {
-            carousel.style.transform = `translateY(-${(index) * 104}%)`;
-        }
+    // Function to update the carousel position
+    function updateCarousel() {
+        const offset = currentIndex * 104;
+        carousel.style.transform = `translateY(-${offset}%)`;
 
-        carouselItems.forEach((item) => {
+        carouselItems.forEach((item, index) => {
             item.style.opacity = 1;
             item.classList.add('faded');
         });
 
-        item.style.opacity = 1;
-        item.classList.remove('faded');
-    })
+        carouselItems[currentIndex].style.opacity = 1;
+        carouselItems[currentIndex].classList.remove('faded');
+    }
 
-    carouselItems[0].addEventListener('click', () => {
-        carouselItems[carouselItems.length - 2].style.opacity = 1;
-        carouselItems[carouselItems.length - 2].classList.remove('faded');
-    })
+    // Handle click events on carousel items
+    carouselItems.forEach((item, index) => {
+        item.addEventListener('click', () => {
+            currentIndex = index;
+            updateCarousel();
+        });
+    });
 
-    carouselItems[carouselItems.length - 1].addEventListener('click', () => {
-        carouselItems[1].style.opacity = 1;
-        carouselItems[1].classList.remove('faded');
-    })
+    // Handle scroll events
+    carousel.addEventListener('wheel', function (event) {
+        if (isScrolling) return;
+        isScrolling = true;
+
+        if (event.deltaY > 0) {
+            // Scrolling down
+            currentIndex = (currentIndex + 1) % carouselItems.length;
+        } else {
+            // Scrolling up
+            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+        }
+
+        updateCarousel();
+
+        setTimeout(() => {
+            isScrolling = false;
+        }, 600); // Adjust delay to match your CSS transition duration
+    });
+
+    // Handle keyboard arrow events
+    window.addEventListener('keydown', (e) => {
+        if (isScrolling) return;
+        isScrolling = true;
+
+        if (e.key === 'ArrowDown') {
+            currentIndex = (currentIndex + 1) % carouselItems.length;
+        } else if (e.key === 'ArrowUp') {
+            currentIndex = (currentIndex - 1 + carouselItems.length) % carouselItems.length;
+        }
+
+        updateCarousel();
+
+        setTimeout(() => {
+            isScrolling = false;
+        }, 600); // Adjust delay to match your CSS transition duration
+    });
+
+    // Initial update
+    updateCarousel();
 });
 
-
-// scroll to change
-let scroll = 0;
-window.addEventListener('wheel', (e) => {
-    if (e.deltaY > 0) {
-        scroll += 104;
-        if (scroll > (carouselItems.length - 1) * 104) {
-            scroll = 0;
-        }
-    }
-    else {
-        scroll -= 104;
-        if (scroll < 0) {
-            scroll = (carouselItems.length - 1) * 104;
-        }
-    }
-
-    carousel.style.transform = `translateY(-${scroll}%)`;
-
-    carouselItems.forEach((item) => {
-        item.style.opacity = 1;
-        item.classList.add('faded');
-    });
-
-    carouselItems[scroll / 104].style.opacity = 1;
-    carouselItems[scroll / 104].classList.remove('faded');
-})
-
-
-// keyboard arrow button to change
-
-window.addEventListener('keydown', (e) => {
-    if (e.key === 'ArrowDown') {
-        scroll += 104;
-        if (scroll > (carouselItems.length - 1) * 104) {
-            scroll = 0;
-        }
-    }
-    else if (e.key === 'ArrowUp') {
-        scroll -= 104;
-        if (scroll < 0) {
-            scroll = (carouselItems.length - 1) * 104;
-        }
-    }
-
-    carousel.style.transform = `translateY(-${scroll}%)`;
-
-    carouselItems.forEach((item) => {
-        item.style.opacity = 1;
-        item.classList.add('faded');
-    });
-
-    carouselItems[scroll / 104].style.opacity = 1;
-    carouselItems[scroll / 104].classList.remove('faded');
-})
-
-// JavaScript ENDS HERE
+{/* </script> */ }
